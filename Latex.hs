@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, NoMonomorphismRestriction #-}
 module Latex where
 
+import CoreTypes
 import SeqCal
 
 
@@ -103,9 +104,9 @@ lpretty = pretty' 0
 
 (|-) :: Monad m => Ctx -> Ctx -> LaTeX m
 (|-) gamma delta = do
-    lintercalate "," $ [ lpretty x | x <- S.toList gamma]
+    lintercalate "," $ [ lpretty x | x <- S.toList $ ctxToSet gamma]
     turnstile
-    lintercalate "," $ [ lpretty x | x <- S.toList delta]
+    lintercalate "," $ [ lpretty x | x <- S.toList $ ctxToSet delta]
 
 
 

@@ -5,7 +5,7 @@ import Control.Applicative hiding (Const)
 import Data.Parser.Grempa.Grammar 
 import Data.Parser.Grempa.Dynamic
 
-import SeqCal
+import CoreTypes
 import qualified Lexar as L
 
 parseString :: String -> Formula
