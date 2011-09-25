@@ -25,9 +25,10 @@ formula = do
         [ paren f
         , ForAll <$> (UVar . L.fromTok) <@ L.Forall <#> L.var <#> f'
         , Exists <$> (UVar . L.fromTok) <@ L.Exists <#> L.var <#> f'
-        , Neg <@  L.Not <#> f'
+        , Equiv <@> f' <# L.Equiv <#> f'
         , And <@> f' <# L.And <#> f'
         , Or  <@> f' <# L.Or <#> f'
+        , Neg <@  L.Not <#> f'
         , id  <@> p]
     p <- rule
         [ Rel <$> L.fromTok <@> L.Pred "" <# L.LPar <#> terms <# L.RPar

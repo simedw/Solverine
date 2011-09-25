@@ -7,7 +7,7 @@ import Data.Parser.Grempa.Static
 import Language.Haskell.TH.Lift
 data Tok 
    = LPar | RPar
-   | Imp | Or | And | Not
+   | Imp | Or | And | Not | Equiv
    | Forall | Exists
    | Var  { fromTok :: String }
    | Const  { fromTok :: String }
@@ -26,6 +26,7 @@ lexToks [] = []
 lexToks ('(':xs) = LPar : lexToks xs
 lexToks (')':xs) = RPar : lexToks xs
 lexToks (',':xs) = SemiColon : lexToks xs
+lexToks ('<':'-':'>':xs) = Equiv : lexToks xs
 lexToks ('-':'>':xs) =  Imp : lexToks xs
 lexToks ('!':xs) =  Not : lexToks xs
 lexToks ('~':xs) =  Not : lexToks xs

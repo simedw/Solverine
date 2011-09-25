@@ -61,6 +61,7 @@ getBad = bad
 
 infixr 4 +=>
 infixr 4 =>+
+infixr 4 -:
 
 (+=>) :: Formula -> Ctx -> Ctx
 (+=>) = insertLeft
@@ -89,6 +90,7 @@ insertLeft form gamma = case form of
     Top -> inGood
     Bot -> inGood
     Imp _ _ -> inGoodSplit
+    Equiv _ _ -> inGoodSplit
     Rel i ts -> gamma { predicates = S.insert (i , ts) (predicates gamma) }
     Neg _ -> inGood
     And _ _ -> inGood
@@ -105,6 +107,7 @@ insertRight form gamma = case form of
     Top -> inGood
     Bot -> inGood
     Imp _ _ -> inGood
+    Equiv _ _ -> inGoodSplit
     Rel i ts -> gamma { predicates = S.insert (i , ts) (predicates gamma) }
     Neg _ -> inGood
     And _ _ -> inGoodSplit
@@ -133,6 +136,8 @@ data Term
 data Formula 
   = Top | Bot
   | Imp Formula Formula
+  | Equiv Formula Formula 
+    -- ^ A->B /\ B -> A, this is not the = relation (since it takes formulas)
   | Rel Ident [Term]
   | Neg Formula
   | And Formula Formula
@@ -144,7 +149,7 @@ data Formula
 infixr 2 ~>
 (~>) = Imp
 
-(<~>) a b = (a ~> b) `And` (b ~> a)
+(<~>) a b = Equiv a b -- (a ~> b) `And` (b ~> a)
 
 data Deduction
   = Intro Ctx Ctx
@@ -152,6 +157,8 @@ data Deduction
   | RTop Ctx Ctx
   | RImp Formula Formula Deduction
   | LImp Formula Formula Deduction Deduction
+  | REqu Formula Formula Deduction Deduction
+  | LEqu Formula Formula Deduction Deduction
   | RNeg Formula Deduction
   | LNeg Formula Deduction
   | RAnd Formula Formula Deduction Deduction

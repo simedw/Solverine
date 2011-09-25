@@ -144,6 +144,14 @@ build ded = case ded of
                         (g2 , d2) = build x2
                      in ((a ~> b) +=> (g1 +:+ (b -: g2))
                          , (a -: d1) +:+ d2)
+  REqu a b x1 x2 -> let (g1 , d1) = build x1
+                        (g2 , d2) = build x2
+                     in ((a -: g1) +:+ (b -: g2)
+                        , (a <~> b) =>+ ((b -: d1) +:+ (a -: d2)))
+  LEqu a b x1 x2 -> let (g1 , d1) = build x1
+                        (g2 , d2) = build x2
+                     in ((a <~> b) +=> ((a -: b -: g1) +:+ g2) 
+                        , d1 +:+ (a -: b -: d2))
   RNeg a x -> let (g , d) = build x
                in (a -: g, (Neg a) =>+ d)
   LNeg a x -> let (g , d) = build x
@@ -241,11 +249,15 @@ solve gamma delta = case () of
       | Just (i , delta') <- getGoodSplit delta = case i of
         And a b -> RAnd a b `fmap` solve gamma (a =>+ delta')
                               `ap` solve gamma (b =>+ delta')
+        Equiv a b -> REqu a b `fmap` solve (a +=> gamma) (b =>+ delta')
+                                `ap` solve (b +=> gamma) (a =>+ delta')
       | Just (i , gamma') <- getGoodSplit gamma = case i of
         Or  a b -> LOr  a b `fmap` solve (a +=> gamma') delta
                               `ap` solve (b +=> gamma') delta
         Imp a b -> LImp a b `fmap` solve gamma' (a =>+ delta)
                               `ap` solve (b +=> gamma') delta
+        Equiv a b -> LEqu a b `fmap` solve (a +=> b +=> gamma') delta
+                                `ap` solve gamma' (a =>+ b =>+ delta)
       | otherwise = shuff toTry >>= tryStuff
       where
         ms = concatMap getMetas (S.toList $ on S.union ctxToSet gamma delta)

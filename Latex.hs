@@ -19,6 +19,7 @@ unary     = comm1  "UnaryInfC"
 binary    = comm1  "BinaryInfC"
 rlabel    = comm1  "RightLabel"
 imp       = comm0_ "rightarrow"
+equiv     = comm0_ "leftrightarrow"
 neg       = comm0_ "neg"
 turnstile = math $ comm0_ "vdash"
 conj      = comm0_ "wedge"
@@ -66,6 +67,10 @@ lpretty = pretty' 0
             pretty' 3 a
             math $ imp
             pretty' 1 b
+        Equiv a b -> paren i 2 $ do 
+            pretty' 3 a
+            math $ equiv
+            pretty' 3 b
         Neg a -> paren i 3 $ do
           math $ neg
           pretty' 2 a
@@ -119,6 +124,8 @@ buildTree = proofTree . tree'
         RTop gamma delta -> zero $ "R" >> math top
         RImp f1 f2 prf -> one prf $ "R" >> math imp
         LImp f1 f2 prf1 prf2 -> two prf1 prf2 $ "L" >> math imp
+        REqu f1 f2 prf1 prf2 -> two prf1 prf2 $ "R" >> math equiv
+        LEqu f1 f2 prf1 prf2 -> two prf1 prf2 $ "L" >> math equiv
         RNeg f prf -> one prf $ "R" >> math neg
         LNeg f prf -> one prf $ "L" >> math neg
         RAnd f1 f2 prf1 prf2 -> two prf1 prf2 $ "R" >> math conj
