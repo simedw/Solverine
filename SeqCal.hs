@@ -194,6 +194,7 @@ subst x y form = case form of
     rec = subst x y
 
 shuff :: [a] -> Solve [a]
+shuff [] = return []
 shuff xs = do
   sg <- getTheStdGen
   return $ shuffle' xs (length xs) sg
